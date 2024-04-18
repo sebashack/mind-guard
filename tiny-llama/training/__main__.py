@@ -74,7 +74,7 @@ def main():
     training_args = TrainingArguments(
         output_dir=output_dir,
         overwrite_output_dir=True,
-        bf16=False,  # Use BF16 if available
+        bf16=True,  # Use BF16 if available
         # logging strategies
         logging_dir=f"{output_dir}/logs",
         logging_strategy="steps",
