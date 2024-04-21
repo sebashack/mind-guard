@@ -64,7 +64,7 @@ def main():
     config = {
         "lora_config": lora_config,
         "learning_rate": 1e-4,
-        "num_train_epochs": 1,
+        "num_train_epochs": 2,
         "gradient_accumulation_steps": 2,
         "per_device_train_batch_size": 2,
         "gradient_checkpointing": False,
