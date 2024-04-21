@@ -1,0 +1,25 @@
+datasets:
+  dataset1:
+    url: 'http://s3.host.com'
+    proportion_with_feature: 0.7
+    proportion_neutral: 0.3
+    feature_column: 'Suicide'
+    text_column: 'Tweet'
+    feature_presence_tags: ['Potential Suicide post']
+    category: 1
+  dataset2:
+    url: 'http://s3.host.com'
+    proportion_with_feature: 0.5
+    proportion_neutral: 0.5
+    feature_column: 'label'
+    text_column: 'text'
+    feature_presence_tag: ['1']
+    category: 2
+  dataset3:
+    url: 'http://s3.host.com'
+    proportion_with_feature: 0.6
+    proportion_neutral: 0.3
+    feature_column: 'cyberbullying_type'
+    text_column: 'tweet_text'
+    feature_presence_tags: ['religion', 'age', 'gender']
+    category: 1

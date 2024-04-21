@@ -1,0 +1,20 @@
+1. TSV:
+id----->text----->category
+
+2. JSON:
+{
+int: "<human-readable-label>"
+}
+
+Notes:
+
+Categories to use:
+1. Depression & (Anxiety?)
+2. Cyberbullying
+3. Suicidal ideation
+4. Netural
+
+3. S3 Bucket with
+
+- Raw Zone.
+- Refine Zone where TSV will be uploaded.
