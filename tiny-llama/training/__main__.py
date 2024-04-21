@@ -79,7 +79,7 @@ def main():
         logging_dir=f"{output_dir}/logs",
         logging_strategy="steps",
         logging_steps=10,
-        save_strategy="no",
+        save_strategy="epoch",
         optim="adamw_torch_fused",
         max_steps=-1,
         **{k: v for k, v in config.items() if k != "lora_config"},

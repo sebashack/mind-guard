@@ -1,3 +1,4 @@
+import argparse
 import sys
 import torch
 from transformers import LlamaTokenizer, LlamaForCausalLM
@@ -37,7 +38,6 @@ def prepare_model(model):
         target_modules=["q_proj", "v_proj"],
     )
 
-    # prepare int-8 model for training
     model = prepare_model_for_kbit_training(model)
     model = get_peft_model(model, peft_config)
     model.print_trainable_parameters()
@@ -45,13 +45,27 @@ def prepare_model(model):
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Run inferences on pretrained llama models"
+    )
+    parser.add_argument(
+        "-m",
+        "--model",
+        required=False,
+        type=str,
+        help="Path to directory with model. If this argument is not provided, the original  TinyLlama model will be loaded",
+    )
+
     if torch.cuda.is_available():
         print("CUDA Version:", torch.version.cuda)
     else:
         raise Exception("CUDA is not available")
 
+    args = parser.parse_args()
+
     llama_model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-    fined_tuned_model_id = "./training_results__19-04-2024__20-32-10"
+    fined_tuned_model_id = args.model if args.model is not None else llama_model_id
+    print(f"************* {fined_tuned_model_id}")
     tokenizer = LlamaTokenizer.from_pretrained(llama_model_id)
 
     model = LlamaForCausalLM.from_pretrained(
