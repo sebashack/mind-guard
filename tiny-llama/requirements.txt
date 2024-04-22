@@ -6,7 +6,7 @@ gensim==4.3.2
 huggingface_hub==0.22.2
 nltk==3.8.1
 pandas==2.2.1
-peft==0.10.0
+peft==0.9.0
 protobuf==5.26.1
 pyLDAvis==3.4.1
 pyspark==3.5.1

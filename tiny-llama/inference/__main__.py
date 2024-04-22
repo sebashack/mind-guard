@@ -1,10 +1,13 @@
+import time
 import argparse
 import sys
 import torch
-from transformers import LlamaTokenizer, LlamaForCausalLM
-from peft import get_peft_model, LoraConfig, TaskType, prepare_model_for_kbit_training
+import random
 
-eval_prompt = """
+from transformers import AutoTokenizer
+from llama_recipes.inference.model_utils import load_model, load_peft_model
+
+user_prompt = """
 Summarize this dialog:
 A: Hi Tom, are you busy tomorrow’s afternoon?
 B: I’m pretty sure I am. What’s up?
@@ -45,47 +48,68 @@ def prepare_model(model):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Run inferences on pretrained llama models"
-    )
-    parser.add_argument(
-        "-m",
-        "--model",
-        required=False,
-        type=str,
-        help="Path to directory with model. If this argument is not provided, the original  TinyLlama model will be loaded",
-    )
+    # parser = argparse.ArgumentParser(
+    #     description="Run inferences on pretrained llama models"
+    # )
+    # parser.add_argument(
+    #     "-m",
+    #     "--model",
+    #     required=False,
+    #     type=str,
+    #     help="Path to directory with model. If this argument is not provided, the original  TinyLlama model will be loaded",
+    # )
 
     if torch.cuda.is_available():
         print("CUDA Version:", torch.version.cuda)
     else:
         raise Exception("CUDA is not available")
 
-    args = parser.parse_args()
+    # args = parser.parse_args()
 
-    llama_model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-    fined_tuned_model_id = args.model if args.model is not None else llama_model_id
-    print(f"************* {fined_tuned_model_id}")
-    tokenizer = LlamaTokenizer.from_pretrained(llama_model_id)
+    base_model = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+    fine_tuned_peft_model = "./results"
 
-    model = LlamaForCausalLM.from_pretrained(
-        fined_tuned_model_id,
-        load_in_8bit=True,
-        device_map="auto",
-        torch_dtype=torch.float16,
-    )
+    seed = random.randint(0, 999999999)
+    torch.cuda.manual_seed(seed)
+    torch.manual_seed(seed)
 
-    model = prepare_model(model)
-    model_input = tokenizer(eval_prompt, return_tensors="pt").to("cuda")
+    use_quantization = True
+    model = load_model(base_model, use_quantization)
+    model = load_peft_model(model, fine_tuned_peft_model)
+
     model.eval()
 
+    tokenizer = AutoTokenizer.from_pretrained(base_model)
+    tokenizer.pad_token = tokenizer.eos_token
+    batch = tokenizer(
+        user_prompt,
+        padding="max_length",
+        truncation=True,
+        max_length=None,
+        return_tensors="pt",
+    )
+    batch = {k: v.to("cuda") for k, v in batch.items()}
+
+    start = time.perf_counter()
     with torch.no_grad():
-        print(
-            tokenizer.decode(
-                model.generate(**model_input, max_new_tokens=100)[0],
-                skip_special_tokens=True,
-            )
+        outputs = model.generate(
+            **batch,
+            max_new_tokens=250,
+            do_sample=True,
+            top_p=1.0,
+            temperature=1.0,
+            min_length=None,
+            use_cache=True,
+            top_k=50,
+            repetition_penalty=1.0,
+            length_penalty=1,
         )
+
+    e2e_inference_time = (time.perf_counter() - start) * 1000
+    print(f"the inference time is {e2e_inference_time} ms")
+    output_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+    print(output_text)
 
 
 if __name__ == "__main__":
