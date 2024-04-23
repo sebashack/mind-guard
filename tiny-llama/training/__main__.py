@@ -1,3 +1,5 @@
+from datetime import datetime
+import os
 import sys
 import torch
 from llama_recipes.finetuning import main
@@ -12,10 +14,13 @@ def train():
     else:
         raise Exception("CUDA is not available")
 
+    now = datetime.now()
+    date_str = now.strftime("%d-%m-%Y__%H-%M-%S")
+    output_dir = f"{os.getcwd()}/fine_tuned_peft_model__{date_str}"
     training_config = train_config()
 
     training_config.model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-    training_config.output_dir = "./results"
+    training_config.output_dir = output_dir
     training_config.peft_method = "lora"
     training_config.use_peft = True
     training_config.quantization = True
@@ -27,13 +32,13 @@ def train():
     training_config.gradient_accumulation_steps = 1
     training_config.mixed_precision = True
     training_config.one_gpu = True
-    training_config.save_model = True
     training_config.batching_strategy = "packing"
     training_config.context_length = 4096
-    training_config.save_metrics = True
-    training_config.num_epochs = 1
+    training_config.num_epochs = 3
     training_config.num_workers_dataloader = 4
     training_config.dataset = "samsum_dataset"
+    training_config.save_metrics = True
+    training_config.save_model = True
 
     main(**asdict(training_config))
 
