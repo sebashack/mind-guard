@@ -7,7 +7,6 @@ venv:
 	${pip_bin} install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 	${pip_bin} install --extra-index-url https://download.pytorch.org/whl/test/cu118 llama-recipes
 	${pip_bin} install -r requirements.txt
-	${py_bin} -m spacy download en_core_web_sm
 
 .PHONY: clean
 clean:
