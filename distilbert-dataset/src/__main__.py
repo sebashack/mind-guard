@@ -25,7 +25,7 @@ def classify_dataset(dataset, config):
 
     return neutral_text, medical_condition_text
 
-def get_date_by_percentage(config, neutral_text, medical_condition_text):
+def get_data_by_percentage(config, neutral_text, medical_condition_text):
     neutral_size = int(len(neutral_text) * config["proportion_neutral"])
     medical_condition_size = int(len(medical_condition_text) * config["proportion_with_feature"])
 
@@ -54,7 +54,7 @@ def generate_dataset(config_datasets, utc_datetime_str):
         config = config_datasets["datasets"][f"dataset{idx}"]
         dataset = pd.read_csv(config["url"])
         neutral_text, medical_condition_text = classify_dataset(dataset, config)
-        random_neutral, random_medical_condition = get_date_by_percentage(config, neutral_text, medical_condition_text)
+        random_neutral, random_medical_condition = get_data_by_percentage(config, neutral_text, medical_condition_text)
         save(config, random_neutral, random_medical_condition, utc_datetime_str)
 
 def main():
