@@ -1,20 +1,20 @@
 datasets:
   dataset1:
-    url: "https://djtoroelab1.s3.amazonaws.com/cyberbullying_tweets.csv"
-    proportion_with_feature: 0.7
-    proportion_neutral: 0.0
-    feature_column: "cyberbullying_type"
-    text_column: "tweet_text"
-    feature_presence_tags: ["religion", "age", "gender", "ethnicity"]
-    category: 2
-  dataset2:
     url: "https://mind-guard.s3.amazonaws.com/sentiment_tweets3.csv"
-    proportion_with_feature: 0.0
+    proportion_with_feature: 0.2
     proportion_neutral: 0.0
     feature_column: "label (depression result)"
     text_column: "message to examine"
     feature_presence_tags: [1]
     category: 1
+  dataset2:
+    url: "https://djtoroelab1.s3.amazonaws.com/cyberbullying_tweets.csv"
+    proportion_with_feature: 0.0
+    proportion_neutral: 0.0
+    feature_column: "cyberbullying_type"
+    text_column: "tweet_text"
+    feature_presence_tags: ["religion", "age", "gender", "ethnicity"]
+    category: 2
   dataset3:
     url: "https://mind-guard.s3.amazonaws.com/StudentsAnxietyAndDepression.csv"
     proportion_with_feature: 0.0
@@ -22,4 +22,12 @@ datasets:
     feature_column: "label"
     text_column: "text"
     feature_presence_tags: [1]
-    category: 1
+    category: 3
+  dataset4:
+    url: "https://mind-guard.s3.amazonaws.com/Suicide_Ideation_Dataset(Twitter-based).csv"
+    proportion_with_feature: 1
+    proportion_neutral: 0.0
+    feature_column: "Suicide"
+    text_column: "Tweet"
+    feature_presence_tags: ["Potential Suicide post"]
+    category: 5

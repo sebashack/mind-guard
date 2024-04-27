@@ -18,7 +18,11 @@ def classify_dataset(dataset, config):
     feature_tags = config["feature_presence_tags"]
 
     for _, row in dataset.iterrows():
-        if row[config["feature_column"]] in feature_tags:
+        feature = row[config["feature_column"]]
+        if not isinstance(feature, (int, float, complex)):
+            feature = feature.strip()
+        
+        if feature in feature_tags:
             medical_condition_text.append(row[config["text_column"]])
         else:
             neutral_text.append(row[config["text_column"]])
@@ -34,12 +38,9 @@ def get_data_by_percentage(config, neutral_text, medical_condition_text):
 
     return random_neutral, random_medical_condition
 
-def save(config, random_neutral, random_medical_condition, utc_datetime_str):
-    headers = ['id', 'text', 'category']
-   
-    with open(f"./output__{utc_datetime_str}.tsv", "w") as tsv_file:
+def save(config, random_neutral, random_medical_condition, final_dataset_name):
+    with open(final_dataset_name, "a") as tsv_file:
         tsv_writer = csv.writer(tsv_file, delimiter='\t', lineterminator='\n')
-        tsv_writer.writerow(headers)
         save_category(random_neutral, 4, tsv_writer)
         save_category(random_medical_condition, config["category"], tsv_writer)
 
@@ -47,7 +48,7 @@ def save_category(text_list, category, tsv_writer):
     for text in text_list:
         tsv_writer.writerow([uuid.uuid4(), text, category])
 
-def generate_dataset(config_datasets, utc_datetime_str):
+def generate_dataset(config_datasets, final_dataset_name):
     random_neutral = []
     random_medical_condition = []
     for idx in range(1, len(config_datasets["datasets"]) + 1):
@@ -55,14 +56,25 @@ def generate_dataset(config_datasets, utc_datetime_str):
         dataset = pd.read_csv(config["url"])
         neutral_text, medical_condition_text = classify_dataset(dataset, config)
         random_neutral, random_medical_condition = get_data_by_percentage(config, neutral_text, medical_condition_text)
-        save(config, random_neutral, random_medical_condition, utc_datetime_str)
+        save(config, random_neutral, random_medical_condition, final_dataset_name)
+
+def initialize_dataset():
+    utc_datetime = datetime.utcnow()
+    utc_datetime_str = utc_datetime.strftime("%Y-%m-%d_%H-%M-%S")
+    headers = ['id', 'text', 'category']
+    file_name = f"./output__{utc_datetime_str}.tsv"
+
+    with open(file_name, "a") as tsv_file:
+        tsv_writer = csv.writer(tsv_file, delimiter='\t', lineterminator='\n')
+        tsv_writer.writerow(headers)
+
+    return file_name
 
 def main():
     path_config = sys.argv[1]
-    utc_datetime = datetime.utcnow()
-    utc_datetime_str = utc_datetime.strftime("%Y-%m-%d_%H-%M-%S")
+    final_dataset_name = initialize_dataset()
     config_datasets = get_config_data(path_config)
-    generate_dataset(config_datasets, utc_datetime_str)
+    generate_dataset(config_datasets, final_dataset_name)
 
 if __name__ == "__main__":
     sys.exit(main())
