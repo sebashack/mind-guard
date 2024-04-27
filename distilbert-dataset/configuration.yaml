@@ -1,0 +1,9 @@
+datasets:
+  dataset1:
+    url: 'https://djtoroelab1.s3.amazonaws.com/cyberbullying_tweets.csv'
+    proportion_with_feature: 0.7
+    proportion_neutral: 0.3
+    feature_column: 'cyberbullying_type'
+    text_column: 'tweet_text'
+    feature_presence_tags: ['religion', 'age', 'gender', 'ethnicity']
+    category: 2
