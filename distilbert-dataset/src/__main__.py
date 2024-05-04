@@ -69,6 +69,14 @@ def save_metrics(category, tag, dataset_name, metadata):
     json_categories[category] = tag
     json_metadata[dataset_name] = metadata
 
+def generate_metadata(neutral_size, medical_condition_size, neutral_text, medical_condition_text):
+    return {
+        "neutral": neutral_size,
+        "featured": medical_condition_size, 
+        "total_neutral": len(neutral_text), 
+        "total_featured": len(medical_condition_text)
+    }
+
 def generate_dataset(config_datasets):
     df = pd.DataFrame(columns=['text', 'category'])
     
@@ -82,12 +90,7 @@ def generate_dataset(config_datasets):
 
         df = save_classification(config, neutral_text[:neutral_size], medical_condition_text[:medical_condition_size], df)
 
-        metadata = {
-            "neutral": neutral_size,
-            "featured": medical_condition_size, 
-            "total_neutral": len(neutral_text), 
-            "total_featured": len(medical_condition_text)
-        }
+        metadata = generate_metadata(neutral_size, medical_condition_size, neutral_text, medical_condition_text)
         save_metrics(config["category"], config["tag_category"], dataset_name, metadata)
     
     save(df)
@@ -96,11 +99,10 @@ def create_parser():
     parser = argparse.ArgumentParser(description='Generate general dataset')
     parser.add_argument('-c', help='path yaml configuration', type=str)
 
-    return parser
+    return parser.parse_args()
 
 def main():
-    parser = create_parser()
-    args = parser.parse_args()
+    args = create_parser()
     config_datasets = get_config_data(args.c)
     generate_dataset(config_datasets)
 
