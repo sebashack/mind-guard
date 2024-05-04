@@ -82,8 +82,9 @@ def save_to_tsv(df):
 def main():
     df = pd.DataFrame(columns=['id', 'text', 'category'])
     path_config = sys.argv[1]
+    path_json = sys.argv[2]
     config_datasets = get_config_data(path_config)
-    df = generate_dataset(config_datasets, df, 'classification.json')
+    df = generate_dataset(config_datasets, df, path_json )
     save_to_tsv(df)
 
 if __name__ == "__main__":
