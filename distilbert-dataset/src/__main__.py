@@ -4,6 +4,7 @@ import pandas as pd
 import uuid
 from datetime import datetime
 import json
+import argparse
 
 def get_config_data(path):
     data = None
@@ -12,15 +13,12 @@ def get_config_data(path):
     return data
 
 def save_to_dataframe(text_list, category, df):
-    for text in text_list:
-        data = pd.DataFrame({
-            "id": [uuid.uuid4()],
-            "text": [text],
-            "category": [category]
-        })
-        df = pd.concat([df, data])
-
-    return df
+    data = pd.DataFrame({
+        "id": [uuid.uuid4() for _ in text_list],
+        "text": text_list,
+        "category": [category] * len(text_list)
+    })
+    return pd.concat([df, data], ignore_index=True)
 
 def save(config, random_neutral, random_medical_condition, df):
     df = save_to_dataframe(random_neutral, 4, df)
@@ -50,7 +48,8 @@ def save_to_json(file_name, json_obj):
         file.seek(0)
         json.dump(file_data, file, indent = 4)
 
-def generate_dataset(config_datasets, df, file_json):
+def generate_dataset(config_datasets, file_json):
+    df = pd.DataFrame(columns=['id', 'text', 'category'])
     for idx in range(1, len(config_datasets["datasets"]) + 1):
         config = config_datasets["datasets"][f"dataset{idx}"]
         dataset = pd.read_csv(config["url"])
@@ -71,7 +70,7 @@ def generate_dataset(config_datasets, df, file_json):
 
         save_to_json(file_json, json_obj)
     
-    return df
+    save_to_tsv(df)
 
 def save_to_tsv(df):
     utc_datetime = datetime.utcnow()
@@ -79,13 +78,18 @@ def save_to_tsv(df):
     file_name = f"./output__{utc_datetime_str}.tsv"
     df.to_csv(file_name, sep='\t', index=False)
 
+def create_parser():
+    parser = argparse.ArgumentParser(description='Generate general dataset')
+    parser.add_argument('-c', help='path yaml configuration', type=str)
+    parser.add_argument('-j', help='path json', type=str)
+
+    return parser
+
 def main():
-    df = pd.DataFrame(columns=['id', 'text', 'category'])
-    path_config = sys.argv[1]
-    path_json = sys.argv[2]
-    config_datasets = get_config_data(path_config)
-    df = generate_dataset(config_datasets, df, path_json )
-    save_to_tsv(df)
+    parser = create_parser()
+    args = parser.parse_args()
+    config_datasets = get_config_data(args.c)
+    generate_dataset(config_datasets, args.j)
 
 if __name__ == "__main__":
     sys.exit(main())
