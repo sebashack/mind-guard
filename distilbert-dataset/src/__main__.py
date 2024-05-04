@@ -71,8 +71,8 @@ def save_metrics(category, tag, dataset_name, metadata):
 
 def generate_dataset(config_datasets):
     df = pd.DataFrame(columns=['text', 'category'])
-    for idx in range(1, len(config_datasets["datasets"]) + 1):
-        dataset_name = f"dataset{idx}"
+    
+    for dataset_name, config in config_datasets["datasets"].items():
         config = config_datasets["datasets"][dataset_name]
         dataset = pd.read_csv(config["url"])
         neutral_text, medical_condition_text = classify_dataset(dataset, config)
