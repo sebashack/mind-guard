@@ -7,28 +7,15 @@ import random
 from transformers import AutoTokenizer
 from llama_recipes.inference.model_utils import load_model, load_peft_model
 
-user_prompt = """
-Summarize this dialog:
-A: Hi Tom, are you busy tomorrow’s afternoon?
-B: I’m pretty sure I am. What’s up?
-A: Can you go with me to the animal shelter?.
-B: What do you want to do?
-A: I want to get a puppy for my son.
-B: That will make him so happy.
-A: Yeah, we’ve discussed it many times. I think he’s ready now.
-B: That’s good. Raising a dog is a tough issue. Like having a baby ;-)
-A: I'll get him one of those little dogs.
-B: One that won't grow up too big;-)
-A: And eat too much;-))
-B: Do you know which one he would like?
-A: Oh, yes, I took him there last Monday. He showed me one that he really liked.
-B: I bet you had to drag him away.
-A: He wanted to take it home right away ;-).
-B: I wonder what he'll name it.
-A: He said he’d name it after his dead hamster – Lemmy  - he's  a great Motorhead fan :-)))
----
-Summary:
-"""
+
+def prepare_input(dialog):
+    return f"Summarize this dialog:\n{dialog.strip()}\n---\nSummary:\n"
+
+
+def read_dialog(file_path):
+    with open(file_path, "r") as file:
+        dialog = file.read()
+    return prepare_input(dialog)
 
 
 def prepare_model(model):
@@ -48,26 +35,33 @@ def prepare_model(model):
 
 
 def main():
-    # parser = argparse.ArgumentParser(
-    #     description="Run inferences on pretrained llama models"
-    # )
-    # parser.add_argument(
-    #     "-m",
-    #     "--model",
-    #     required=False,
-    #     type=str,
-    #     help="Path to directory with model. If this argument is not provided, the original  TinyLlama model will be loaded",
-    # )
+    parser = argparse.ArgumentParser(
+        description="Run inferences on pretrained llama models"
+    )
+    parser.add_argument(
+        "-m",
+        "--model",
+        required=False,
+        type=str,
+        help="Path to directory with model. If this argument is not provided, the original  TinyLlama model will be loaded",
+    )
+    parser.add_argument(
+        "-d",
+        "--dialog",
+        required=True,
+        type=str,
+        help="Path to file with dialog to summarize",
+    )
 
     if torch.cuda.is_available():
         print("CUDA Version:", torch.version.cuda)
     else:
         raise Exception("CUDA is not available")
 
-    # args = parser.parse_args()
+    args = parser.parse_args()
 
     base_model = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-    fine_tuned_peft_model = "./results"
+    fine_tuned_peft_model = args.model
 
     seed = random.randint(0, 999999999)
     torch.cuda.manual_seed(seed)
@@ -75,14 +69,16 @@ def main():
 
     use_quantization = True
     model = load_model(base_model, use_quantization)
-    model = load_peft_model(model, fine_tuned_peft_model)
+
+    if fine_tuned_peft_model is not None:
+        model = load_peft_model(model, fine_tuned_peft_model)
 
     model.eval()
 
     tokenizer = AutoTokenizer.from_pretrained(base_model)
     tokenizer.pad_token = tokenizer.eos_token
     batch = tokenizer(
-        user_prompt,
+        read_dialog(args.dialog),
         padding="max_length",
         truncation=True,
         max_length=None,
@@ -109,7 +105,9 @@ def main():
     print(f"the inference time is {e2e_inference_time} ms")
     output_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-    print(output_text)
+    summary = output_text.split("Summary:\n")[1].strip()
+
+    print(summary)
 
 
 if __name__ == "__main__":
