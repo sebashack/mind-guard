@@ -39,6 +39,11 @@ def split_dataset(dataset, config):
 
         txt = row[config["text_column"]]
 
+        if not isinstance(txt, str) or txt is None or txt.isspace():
+            continue
+
+        txt = txt.replace("\t", " ")
+
         if feature in feature_tags:
             featured_texts.append(txt)
         else:
