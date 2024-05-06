@@ -5,7 +5,7 @@ import numpy as np
 import os
 import sys
 import torch
-from datasets import Dataset
+from datasets import Dataset, load_metric
 from transformers import (
     AutoTokenizer,
     DataCollatorWithPadding,
@@ -31,7 +31,7 @@ def compute_metrics(eval_pred):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Train distilbert")
+    parser = argparse.ArgumentParser(description="Train DISTIL-BERT")
     parser.add_argument(
         "-d",
         "--dataset",
@@ -93,6 +93,8 @@ def main():
     )
 
     trainer.train()
+
+    print("** Evaluation **")
     trainer.evaluate()
 
 

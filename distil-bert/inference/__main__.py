@@ -1,19 +1,47 @@
+import argparse
 import torch
 import sys
 from transformers import pipeline
 
+categories = {
+    "LABEL_0": "neutral",
+    "LABEL_1": "depression_and_anxiety",
+    "LABEL_2": "cyber_bullying",
+    "LABEL_3": "suicidal_ideation",
+}
+
 
 def main():
+    parser = argparse.ArgumentParser(description="Inferences with DISTIL-BERT")
+    parser.add_argument(
+        "-m",
+        "--model",
+        required=True,
+        type=str,
+        help="Path model directory",
+    )
+    parser.add_argument(
+        "-i",
+        "--input",
+        required=True,
+        type=str,
+        help="Path to input text file",
+    )
+
     if torch.cuda.is_available():
         print("CUDA Version:", torch.version.cuda)
     else:
         raise Exception("CUDA is not available")
 
-    model_dirpath = "./fine_tuned_distil_bert_model__25-04-2024__20-22-10/checkpoint-1250"
-    model = pipeline("text-classification", model=model_dirpath)
-    results = model(["im meeting up with one of my besties tonight! Cant wait!! - GIRL TALK!!"])
+    args = parser.parse_args()
 
-    print(results)
+    model = pipeline("text-classification", model=args.model)
+
+    with open(args.input, "r") as file:
+        texts = file.read()
+        inputs = [s.strip() for s in texts.split("\n>>\n")]
+        for r in model(inputs):
+            print(f"{categories[r['label']]}: {r['score']}")
 
 
 if __name__ == "__main__":
