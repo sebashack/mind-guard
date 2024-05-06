@@ -26,14 +26,16 @@ def save_classification(config, neutral_texts, featured_texts, df):
 def split_dataset(dataset, config):
     neutral_texts = []
     featured_texts = []
-    feature_tags = config["feature_presence_tags"]
+    feature_tags = [s.strip() for s in config["feature_presence_tags"]]
 
     for _, row in dataset.iterrows():
         feature = row[config["feature_column"]]
         if isinstance(feature, int) or isinstance(feature, float):
             if math.isnan(feature):
                 continue
-            feature = str(int(feature)).strip()
+            feature = str(int(feature))
+
+        feature = feature.strip()
 
         txt = row[config["text_column"]]
 
@@ -67,9 +69,7 @@ def generate_dataset(config_datasets):
         neutral_texts, featured_texts = split_dataset(dataset, config)
 
         neutral_size = round(len(neutral_texts) * config["proportion_neutral"])
-        featured_size = round(
-            len(featured_texts) * config["proportion_with_feature"]
-        )
+        featured_size = round(len(featured_texts) * config["proportion_with_feature"])
 
         df = save_classification(
             config,
