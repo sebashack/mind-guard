@@ -1,9 +1,11 @@
+import argparse
+import random
 from datetime import datetime
 import numpy as np
 import os
 import sys
 import torch
-from datasets import load_dataset, load_metric
+from datasets import Dataset
 from transformers import (
     AutoTokenizer,
     DataCollatorWithPadding,
@@ -29,38 +31,40 @@ def compute_metrics(eval_pred):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Train distilbert")
+    parser.add_argument(
+        "-d",
+        "--dataset",
+        required=True,
+        type=str,
+        help="Path TSV file with dataset",
+    )
+
     if torch.cuda.is_available():
         print("CUDA Version:", torch.version.cuda)
     else:
         raise Exception("CUDA is not available")
 
-    dataset_name = "sentiment140"
-    dataset = load_dataset(dataset_name)
-    small_train_dataset = (
-        dataset["train"].shuffle(seed=42).select([i for i in list(range(10000))])
-    )
-    small_test_dataset = (
-        dataset["test"].shuffle(seed=42).select([i for i in list(range(450))])
-    )
+    args = parser.parse_args()
+
+    seed = random.randint(0, 999999999)
+    dataset_path = args.dataset
+    dataset = Dataset.from_csv(dataset_path, delimiter="\t")
+    dataset = dataset.train_test_split(test_size=0.1, seed=seed)
 
     tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
     data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
     def preprocess_function(examples):
-        # Remap labels
-        label_map = {0: 0, 2: 1, 4: 2}
-        labels = [label_map[label] for label in examples["sentiment"]]
-
-        # Tokenize text
         tokenized_inputs = tokenizer(examples["text"], truncation=True)
-        tokenized_inputs["labels"] = labels
+        tokenized_inputs["labels"] = [int(label) for label in examples["category"]]
         return tokenized_inputs
 
-    tokenized_train = small_train_dataset.map(preprocess_function, batched=True)
-    tokenized_test = small_test_dataset.map(preprocess_function, batched=True)
+    tokenized_train = dataset["train"].map(preprocess_function, batched=True)
+    tokenized_test = dataset["test"].map(preprocess_function, batched=True)
 
     model = AutoModelForSequenceClassification.from_pretrained(
-        "distilbert-base-uncased", num_labels=3
+        "distilbert-base-uncased", num_labels=4
     )
 
     now = datetime.now()
@@ -72,7 +76,7 @@ def main():
         learning_rate=2e-5,
         per_device_train_batch_size=16,
         per_device_eval_batch_size=16,
-        num_train_epochs=2,
+        num_train_epochs=4,
         weight_decay=0.01,
         save_strategy="epoch",
         push_to_hub=False,
