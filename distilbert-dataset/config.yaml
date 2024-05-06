@@ -1,8 +1,8 @@
 datasets:
   dataset1:
     url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/sentiment_tweets3.tsv"
-    proportion_with_feature: 0.8
-    proportion_neutral: 0.15
+    proportion_with_feature: 1
+    proportion_neutral: 0.12
     feature_column: "label (depression result)"
     text_column: "message to examine"
     feature_presence_tags: ["1"]
@@ -11,34 +11,43 @@ datasets:
   dataset2:
     url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/students_depression_anxiety.tsv"
     proportion_with_feature: 1
-    proportion_neutral: 0.15
+    proportion_neutral: 0.2
     feature_column: "label"
     text_column: "text"
     feature_presence_tags: ["1"]
     category: 1
-    label: "depression_and_axiety"
+    label: "depression_and_anxiety"
   dataset3:
+    url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/depression_dataset_reddit_cleaned.tsv"
+    proportion_with_feature: 1
+    proportion_neutral: 0.25
+    feature_column: "is_depression"
+    text_column: "clean_text"
+    feature_presence_tags: ["1"]
+    category: 1
+    label: "depression_and_anxiety"
+  dataset4:
     url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/cyberbullying_tweets.tsv"
-    proportion_with_feature: 0.7
-    proportion_neutral: 0.15
+    proportion_with_feature: 0.20
+    proportion_neutral: 0.08
     feature_column: "cyberbullying_type"
     text_column: "tweet_text"
     feature_presence_tags: ["religion", "age", "gender", "ethnicity"]
     category: 2
     label: "cyber_bullying"
-  dataset4:
+  dataset5:
     url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/Suicide_Detection.tsv"
-    proportion_with_feature: 1
-    proportion_neutral: 0.15
+    proportion_with_feature: 0.06
+    proportion_neutral: 0.008
     feature_column: "class"
     text_column: "text"
     feature_presence_tags: ["suicide"]
     category: 3
     label: "suicidal_ideation"
-  dataset5:
+  dataset6:
     url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/Suicide_Ideation_Dataset_twitter_based.tsv"
     proportion_with_feature: 1
-    proportion_neutral: 0.15
+    proportion_neutral: 0.9
     feature_column: "Suicide"
     text_column: "Tweet"
     feature_presence_tags: ["Potential Suicide post"]
