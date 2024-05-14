@@ -1,3 +1,4 @@
+import random
 import math
 import sys
 import yaml
@@ -49,6 +50,9 @@ def split_dataset(dataset, config):
         else:
             neutral_texts.append(txt)
 
+    random.shuffle(neutral_texts)
+    random.shuffle(featured_texts)
+
     return neutral_texts, featured_texts
 
 
@@ -88,6 +92,9 @@ def generate_dataset(config_datasets):
             "featured": featured_size,
             "total_neutral": len(neutral_texts),
             "total_featured": len(featured_texts),
+            "label": config["label"],
+            "dataset": dataset_name,
+            "dataset_url": config["url"],
         }
 
         json_categories[config["category"]] = config["label"]
