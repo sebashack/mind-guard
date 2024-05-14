@@ -6,8 +6,8 @@ from transformers import pipeline
 categories = {
     "LABEL_0": "neutral",
     "LABEL_1": "depression_and_anxiety",
-    "LABEL_2": "cyber_bullying",
-    "LABEL_3": "suicidal_ideation",
+    "LABEL_2": "suicidal_ideation",
+    "LABEL_3": "cyber_bullying",
 }
 
 
