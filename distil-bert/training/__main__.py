@@ -56,7 +56,9 @@ def main():
     data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
     def preprocess_function(examples):
-        tokenized_inputs = tokenizer(examples["text"], truncation=True)
+        tokenized_inputs = tokenizer(
+            examples["text"], truncation=True, max_length=512, padding="max_length"
+        )
         tokenized_inputs["labels"] = [int(label) for label in examples["category"]]
         return tokenized_inputs
 
