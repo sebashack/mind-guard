@@ -1,8 +1,9 @@
+max_word_length: 256
 datasets:
   dataset1:
     url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/sentiment_tweets3.tsv"
     proportion_with_feature: 1
-    proportion_neutral: 0.38
+    proportion_neutral: 0.36
     feature_column: "label (depression result)"
     text_column: "message to examine"
     feature_presence_tags: ["1"]
@@ -11,7 +12,7 @@ datasets:
   dataset2:
     url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/students_anxiety_and_depression_classify.tsv"
     proportion_with_feature: 1
-    proportion_neutral: 0.38
+    proportion_neutral: 0.37
     feature_column: "label"
     text_column: "text"
     feature_presence_tags: ["1"]
@@ -20,7 +21,7 @@ datasets:
   dataset3:
     url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/student_depression_text.tsv"
     proportion_with_feature: 1
-    proportion_neutral: 0.38
+    proportion_neutral: 0.37
     feature_column: "label"
     text_column: "text"
     feature_presence_tags: ["1"]
@@ -55,7 +56,7 @@ datasets:
     label: "suicidal_ideation"
   dataset7:
     url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/cyberbullying_tweets.tsv"
-    proportion_with_feature: 0.333
+    proportion_with_feature: 0.31
     proportion_neutral: 0.08
     feature_column: "cyberbullying_type"
     text_column: "tweet_text"
