@@ -34,7 +34,7 @@ def train():
     training_config.one_gpu = True
     training_config.batching_strategy = "packing"
     training_config.context_length = 4096
-    training_config.num_epochs = 3
+    training_config.num_epochs = 5
     training_config.num_workers_dataloader = 4
     training_config.dataset = "samsum_dataset"
     training_config.save_metrics = True
