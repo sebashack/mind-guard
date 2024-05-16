@@ -79,7 +79,7 @@ def main():
     tokenizer.pad_token = tokenizer.eos_token
     batch = tokenizer(
         read_dialog(args.dialog),
-        padding="max_length",
+        padding=True,
         truncation=True,
         max_length=None,
         return_tensors="pt",
