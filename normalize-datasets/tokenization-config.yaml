@@ -1,0 +1,65 @@
+max_word_length: 1000000
+datasets:
+  dataset1:
+    url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/sentiment_tweets3.tsv"
+    proportion_with_feature: 1
+    proportion_neutral: 0
+    feature_column: "label (depression result)"
+    text_column: "message to examine"
+    feature_presence_tags: ["1"]
+    category: 1
+    label: "depression_and_anxiety"
+  dataset2:
+    url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/students_anxiety_and_depression_classify.tsv"
+    proportion_with_feature: 1
+    proportion_neutral: 0
+    feature_column: "label"
+    text_column: "text"
+    feature_presence_tags: ["1"]
+    category: 1
+    label: "depression_and_anxiety"
+  dataset3:
+    url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/student_depression_text.tsv"
+    proportion_with_feature: 1
+    proportion_neutral: 0
+    feature_column: "label"
+    text_column: "text"
+    feature_presence_tags: ["1"]
+    category: 1
+    label: "depression_and_anxiety"
+  dataset4:
+    url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/mental-health.tsv"
+    proportion_with_feature: 1
+    proportion_neutral: 0
+    feature_column: "label"
+    text_column: "text"
+    feature_presence_tags: ["depression"]
+    category: 1
+    label: "depression_and_anxiety"
+  dataset5:
+    url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/mental-health.tsv"
+    proportion_with_feature: 1
+    proportion_neutral: 0
+    feature_column: "label"
+    text_column: "text"
+    feature_presence_tags: ["SuicideWatch"]
+    category: 2
+    label: "suicidal_ideation"
+  dataset6:
+    url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/Suicide_Ideation_Datase_Twitter_based.tsv"
+    proportion_with_feature: 1
+    proportion_neutral: 0
+    feature_column: "Suicide"
+    text_column: "Tweet"
+    feature_presence_tags: ["Potential Suicide post"]
+    category: 2
+    label: "suicidal_ideation"
+  dataset7:
+    url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/cyberbullying_tweets.tsv"
+    proportion_with_feature: 1
+    proportion_neutral: 0
+    feature_column: "cyberbullying_type"
+    text_column: "tweet_text"
+    feature_presence_tags: ["religion", "age", "gender", "ethnicity"]
+    category: 3
+    label: "cyber_bullying"
