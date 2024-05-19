@@ -31,7 +31,7 @@ def get_top_n_words_per_cluster(df, labels, words, N=10):
     return top_words
 
 
-def find_optimal_k(df, n_components, max_k=10):
+def find_optimal_k(df, n_components, max_k=10, step=1):
     tfidf = TfidfVectorizer()
     csr_mat = tfidf.fit_transform(df["tokens_str"])
     words = tfidf.get_feature_names_out()
@@ -40,13 +40,13 @@ def find_optimal_k(df, n_components, max_k=10):
     reduced_data = svd.fit_transform(csr_mat)
 
     inertia = []
-    for k in range(2, max_k + 1):
+    for k in range(2, max_k + 1, step):
         kmeans = KMeans(n_clusters=k)
         kmeans.fit(reduced_data)
         inertia.append(kmeans.inertia_)
 
     plt.figure(figsize=(10, 5))
-    plt.plot(range(2, max_k + 1), inertia, "bx-")
+    plt.plot(range(2, max_k + 1, step), inertia, "bx-")
     plt.xlabel("k")
     plt.ylabel("Inertia")
     plt.title("Elbow Method For Optimal k")
@@ -73,7 +73,7 @@ def plot_explained_variance(df, max_components=500):
     plt.ylabel("Cumulative Explained Variance")
     plt.title("Explained Variance by Number of Components")
 
-    plt.xticks(range(1, max_components, 100))
+    plt.xticks(range(1, max_components, 200))
     plt.grid(True)
 
     plt.show()
@@ -105,25 +105,15 @@ def pipeline(df, n_components, n_clusters):
 
 
 def main():
-    depression_url = "https://mindguard.s3.amazonaws.com/refined/depression-with-tokens/depression-with-tokens.tsv"
-    suicide_url = "https://mindguard.s3.amazonaws.com/refined/suicide-with-tokens/suicide-with-tokens.tsv"
     cyberbullying_url = "https://mindguard.s3.amazonaws.com/refined/cyberbullying-with-tokens/cyberbullying-with-tokens.tsv"
 
-    print("-- Depression data analysis --")
-    df_depression = read_dataset_with_tokens(depression_url)
+    print("-- Cyberbullying data analysis --")
+    df_cyberbullying = read_dataset_with_tokens(cyberbullying_url)
 
-    # plot_explained_variance(df_depression, max_components=2000) # Run this analysis to visualize optimal number of components
-    # find_optimal_k(df_depression, n_components=1800, max_k=100) # Run this anlysis to visualize optimal k
-    pipeline(df_depression, n_components=1800, n_clusters=40)
+    # plot_explained_variance(df_cyberbullying, max_components=1000) # Run this analysis to visualize optimal number of components
 
-    # print("-- Suicide data analysis --")
-
-    # df_suicide = read_dataset_with_tokens(suicide_url)
-    # pipeline(df_suicide, n_components=100, n_clusters=5)
-
-    # print("-- Cyberbullying data analysis --")
-    # df_cyberbullying = read_dataset_with_tokens(cyberbullying_url)
-    # pipeline(df_cyberbullying, n_components=100, n_clusters=5)
+    # find_optimal_k(df_cyberbullying, n_components=1000, max_k=100, step=1) # Run this anlysis to visualize optimal k
+    pipeline(df_cyberbullying, n_components=1000, n_clusters=38)
 
 
 if __name__ == "__main__":
