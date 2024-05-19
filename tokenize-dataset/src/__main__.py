@@ -43,7 +43,7 @@ def main():
 
     args = parser.parse_args()
 
-    andarallel.initialize(progress_bar=True)
+    pandarallel.initialize(progress_bar=True)
 
     df = pd.read_csv(args.dataset, sep="\t")
     spacy_nlp = spacy.load("en_core_web_sm")
