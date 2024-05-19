@@ -1,0 +1,20 @@
+max_word_length: 1000000
+datasets:
+  dataset5:
+    url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/mental-health.tsv"
+    proportion_with_feature: 1
+    proportion_neutral: 0
+    feature_column: "label"
+    text_column: "text"
+    feature_presence_tags: ["SuicideWatch"]
+    category: 2
+    label: "suicidal_ideation"
+  dataset6:
+    url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/Suicide_Ideation_Datase_Twitter_based.tsv"
+    proportion_with_feature: 1
+    proportion_neutral: 0
+    feature_column: "Suicide"
+    text_column: "Tweet"
+    feature_presence_tags: ["Potential Suicide post"]
+    category: 2
+    label: "suicidal_ideation"

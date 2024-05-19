@@ -1,0 +1,11 @@
+max_word_length: 1000000
+datasets:
+  dataset7:
+    url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/cyberbullying_tweets.tsv"
+    proportion_with_feature: 1
+    proportion_neutral: 0
+    feature_column: "cyberbullying_type"
+    text_column: "tweet_text"
+    feature_presence_tags: ["religion", "age", "gender", "ethnicity"]
+    category: 3
+    label: "cyber_bullying"
