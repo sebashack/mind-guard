@@ -99,6 +99,13 @@ def main():
     print("** Evaluation **")
     trainer.evaluate()
 
+    evaluation_metrics = trainer.evaluate()
+
+    metrics_file = os.path.join(output_dir, f"{os.getcwd()}/evaluation_metrics.txt")
+    with open(metrics_file, "w") as f:
+        for key, value in evaluation_metrics.items():
+            f.write(f"{key}: {value}\n")
+
 
 if __name__ == "__main__":
     sys.exit(main())
