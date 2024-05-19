@@ -33,18 +33,22 @@ def token_counts_dataframe(df, spark):
 def main():
     spark = SparkSession.builder.appName("WordCount").getOrCreate()
 
-    tsv_url = "https://spulido1lab1.s3.amazonaws.com/mind-guard/tokenized/dataset-with-tokens.tsv"
+    tsv_url = "https://spulido1lab1.s3.amazonaws.com/mind-guard/tokenized/depression-with-tokens-2024-05-19_10-42-24.tsv"
 
     pd_df = read_dataset_with_tokens(tsv_url)
-
-    df = spark.createDataFrame(pd_df)
-
-    df_depression = df.filter(df.category == 1)
-    df_suicide = df.filter(df.category == 2)
-    df_cyberbullying = df.filter(df.category == 3)
-
+    df_depression = spark.createDataFrame(pd_df)
     token_counts_dataframe(df_depression, spark).show(30)
+
+    tsv_url = "https://spulido1lab1.s3.amazonaws.com/mind-guard/tokenized/suicide-with-tokens-2024-05-19_10-44-07.tsv"
+
+    pd_df = read_dataset_with_tokens(tsv_url)
+    df_suicide = spark.createDataFrame(pd_df)
     token_counts_dataframe(df_suicide, spark).show(30)
+
+    tsv_url = "https://spulido1lab1.s3.amazonaws.com/mind-guard/tokenized/cyberbullying-with-tokens-2024-05-19_10-46-05.tsv"
+
+    pd_df = read_dataset_with_tokens(tsv_url)
+    df_cyberbullying = spark.createDataFrame(pd_df)
     token_counts_dataframe(df_cyberbullying, spark).show(30)
 
 
