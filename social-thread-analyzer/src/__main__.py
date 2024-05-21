@@ -1,3 +1,4 @@
+import json
 import argparse
 import os
 import random
@@ -6,6 +7,7 @@ import subprocess
 import sys
 import time
 import torch
+import pandas as pd
 
 from transformers import AutoTokenizer, pipeline
 from llama_recipes.inference.model_utils import load_model, load_peft_model
@@ -32,14 +34,21 @@ def download_and_extract_tar_lz(url, output_dir):
     os.remove(tar_path)
 
 
-def prepare_input(dialog):
-    return f"Summarize this dialog:\n{dialog.strip()}\n---\nSummary:\n"
+def read_thread(tsv_path):
+    df = pd.read_csv(tsv_path, sep="\t")
 
+    thread = ""
+    posts = []
+    for index, row in df.iterrows():
+        username = row["username"]
+        post = row["post"].replace("\n", " ")
 
-def read_dialog(file_path):
-    with open(file_path, "r") as file:
-        dialog = file.read()
-    return prepare_input(dialog)
+        thread += f"{username}: {post}\n"
+        posts.append(post)
+
+    thread = f"Summarize this dialog:\n{thread.strip()}\n---\nSummary:\n"
+
+    return thread, posts
 
 
 def prepare_model(model):
@@ -59,10 +68,10 @@ def prepare_model(model):
 
 
 tiny_llama_fine_tuned_model = "fine_tuned_peft_model__15-05-2024__18-41-12"
-tiny_llama_url = "https://spulido1lab1.s3.amazonaws.com/mind-guard/models/002__tiny_llama_fine_tuned_peft_model_5_epochs_15-05-2024__18-41-12.tar.lz"
+tiny_llama_url = "https://mindguard.s3.amazonaws.com/trusted/tiny-llama/002__tiny_llama_fine_tuned_peft_model_5_epochs_15-05-2024__18-41-12.tar.lz"
 
 distil_bert_fined_tuned_model = "checkpoint-8552"
-distil_bert_url = "https://spulido1lab1.s3.amazonaws.com/mind-guard/models/002_fine_tuned_distil_bert_model_with_metrics_19-05-2024__20-54-52.tar.lz"
+distil_bert_url = "https://mindguard.s3.amazonaws.com/trusted/distil-bert/002_fine_tuned_distil_bert_model_with_metrics_19-05-2024__20-54-52.tar.lz"
 
 categories = {
     "LABEL_0": "neutral",
@@ -88,7 +97,7 @@ def llama_summary(model_path, thread):
     tokenizer = AutoTokenizer.from_pretrained(base_model)
     tokenizer.pad_token = tokenizer.eos_token
     batch = tokenizer(
-        read_dialog(thread),
+        thread,
         padding=True,
         truncation=True,
         max_length=None,
@@ -122,8 +131,17 @@ def llama_summary(model_path, thread):
 
 def distil_bert_summary_classification(model_path, summary):
     model = pipeline("text-classification", model=model_path)
-    for r in model([summary]):
-        print(f"{categories[r['label']]}: {r['score']}")
+    r = model([summary])[0]
+    return {"category": categories[r["label"]], "score": r["score"]}
+
+
+def distil_bert_post_classification(model_path, posts):
+    model = pipeline("text-classification", model=model_path)
+    results = {}
+    for i, r in enumerate(model(posts)):
+        results[i] = {"category": categories[r["label"]], "score": r["score"]}
+
+    return results
 
 
 def main():
@@ -143,6 +161,8 @@ def main():
 
     args = parser.parse_args()
 
+    thread, posts = read_thread(args.thread)
+
     models_dir = os.path.join(os.getcwd(), "_models")
     if not os.path.exists(models_dir):
         download_and_extract_tar_lz(tiny_llama_url, models_dir)
@@ -151,9 +171,22 @@ def main():
     ft_tiny_llama_path = os.path.join(models_dir, tiny_llama_fine_tuned_model)
     ft_distil_bert_path = os.path.join(models_dir, distil_bert_fined_tuned_model)
 
-    summary = llama_summary(ft_tiny_llama_path, args.thread)
+    summary = llama_summary(ft_tiny_llama_path, thread)
 
-    distil_bert_summary_classification(ft_distil_bert_path, summary)
+    summary_classification = distil_bert_summary_classification(
+        ft_distil_bert_path, summary
+    )
+
+    post_classification = distil_bert_post_classification(ft_distil_bert_path, posts)
+
+    result = {
+        "summary": summary,
+        "summary_classification": summary_classification,
+        "post_classification": post_classification,
+    }
+
+    with open(os.path.join(os.getcwd(), "classification.json"), "w") as f:
+        json.dump(result, f, indent=4)
 
 
 if __name__ == "__main__":
