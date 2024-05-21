@@ -1,7 +1,7 @@
-max_word_length: 1000000
+max_word_length: 100000
 datasets:
   dataset7:
-    url: "https://spulido1lab1.s3.amazonaws.com/mind-guard/cyberbullying_tweets.tsv"
+    url: "https://mindguard.s3.amazonaws.com/raw/cyberbullying_tweets.tsv"
     proportion_with_feature: 1
     proportion_neutral: 0
     feature_column: "cyberbullying_type"
