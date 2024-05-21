@@ -1,0 +1,160 @@
+import argparse
+import os
+import random
+import requests
+import subprocess
+import sys
+import time
+import torch
+
+from transformers import AutoTokenizer, pipeline
+from llama_recipes.inference.model_utils import load_model, load_peft_model
+
+
+def download_and_extract_tar_lz(url, output_dir):
+    os.makedirs(output_dir, exist_ok=True)
+
+    tar_lz_path = os.path.join(output_dir, "artifact.tar.lz")
+
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+
+    with open(tar_lz_path, "wb") as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            f.write(chunk)
+
+    subprocess.run(["lzip", "-d", tar_lz_path], check=True)
+
+    tar_path = tar_lz_path[:-3]
+
+    subprocess.run(["tar", "-xf", tar_path, "-C", output_dir], check=True)
+
+    os.remove(tar_path)
+
+
+def prepare_input(dialog):
+    return f"Summarize this dialog:\n{dialog.strip()}\n---\nSummary:\n"
+
+
+def read_dialog(file_path):
+    with open(file_path, "r") as file:
+        dialog = file.read()
+    return prepare_input(dialog)
+
+
+def prepare_model(model):
+    peft_config = LoraConfig(
+        task_type=TaskType.CAUSAL_LM,
+        inference_mode=False,
+        r=8,
+        lora_alpha=32,
+        lora_dropout=0.05,
+        target_modules=["q_proj", "v_proj"],
+    )
+
+    model = prepare_model_for_kbit_training(model)
+    model = get_peft_model(model, peft_config)
+    model.print_trainable_parameters()
+    return model
+
+
+tiny_llama_fine_tuned_model = "fine_tuned_peft_model__15-05-2024__18-41-12"
+tiny_llama_url = "https://spulido1lab1.s3.amazonaws.com/mind-guard/models/002__tiny_llama_fine_tuned_peft_model_5_epochs_15-05-2024__18-41-12.tar.lz"
+
+distil_bert_fined_tuned_model = "checkpoint-8552"
+distil_bert_url = "https://spulido1lab1.s3.amazonaws.com/mind-guard/models/002_fine_tuned_distil_bert_model_with_metrics_19-05-2024__20-54-52.tar.lz"
+
+categories = {
+    "LABEL_0": "neutral",
+    "LABEL_1": "depression_and_anxiety",
+    "LABEL_2": "suicidal_ideation",
+    "LABEL_3": "cyber_bullying",
+}
+
+
+def llama_summary(model_path, thread):
+    base_model = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+
+    seed = random.randint(0, 999999999)
+    torch.cuda.manual_seed(seed)
+    torch.manual_seed(seed)
+
+    use_quantization = True
+    model = load_model(base_model, use_quantization, use_fast_kernels=False)
+    model = load_peft_model(model, model_path)
+
+    model.eval()
+
+    tokenizer = AutoTokenizer.from_pretrained(base_model)
+    tokenizer.pad_token = tokenizer.eos_token
+    batch = tokenizer(
+        read_dialog(thread),
+        padding=True,
+        truncation=True,
+        max_length=None,
+        return_tensors="pt",
+    )
+    batch = {k: v.to("cuda") for k, v in batch.items()}
+
+    start = time.perf_counter()
+    with torch.no_grad():
+        outputs = model.generate(
+            **batch,
+            max_new_tokens=250,
+            do_sample=True,
+            top_p=1.0,
+            temperature=1.0,
+            min_length=None,
+            use_cache=True,
+            top_k=50,
+            repetition_penalty=1.0,
+            length_penalty=1,
+        )
+
+    e2e_inference_time = (time.perf_counter() - start) * 1000
+    print(f"the inference time is {e2e_inference_time} ms")
+    output_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+    summary = output_text.split("Summary:\n")[1].strip()
+
+    return summary
+
+
+def distil_bert_summary_classification(model_path, summary):
+    model = pipeline("text-classification", model=model_path)
+    for r in model([summary]):
+        print(f"{categories[r['label']]}: {r['score']}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Analyze social media post")
+    parser.add_argument(
+        "-t",
+        "--thread",
+        required=True,
+        type=str,
+        help="Path to file with dialog to summarize",
+    )
+
+    if torch.cuda.is_available():
+        print("CUDA Version:", torch.version.cuda)
+    else:
+        raise Exception("CUDA is not available")
+
+    args = parser.parse_args()
+
+    models_dir = os.path.join(os.getcwd(), "_models")
+    if not os.path.exists(models_dir):
+        download_and_extract_tar_lz(tiny_llama_url, models_dir)
+        download_and_extract_tar_lz(distil_bert_url, models_dir)
+
+    ft_tiny_llama_path = os.path.join(models_dir, tiny_llama_fine_tuned_model)
+    ft_distil_bert_path = os.path.join(models_dir, distil_bert_fined_tuned_model)
+
+    summary = llama_summary(ft_tiny_llama_path, args.thread)
+
+    distil_bert_summary_classification(ft_distil_bert_path, summary)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
