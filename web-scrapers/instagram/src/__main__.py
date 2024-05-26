@@ -2,8 +2,10 @@ import sys
 import argparse
 from instagrapi import Client
 from random_username.generate import generate_username
+import csv
 
 username_mappings = {}
+user_id_counter = 1
 
 def create_client(username, password):
     cl = Client()
@@ -25,20 +27,26 @@ def get_arguments():
 
 def scraper(args, cl):
     response = cl.hashtag_medias_recent(args.hashtag, amount=args.media_amount)
-    with open(args.output_file, 'w') as f:
+    with open(args.output_file, 'w', newline='') as file:
+        tsv_writer = csv.writer(file, delimiter='\t')
+        tsv_writer.writerow(['anonymous_nickname', 'comment', 'id'])
+
         for media in response:
             media_id = media.pk
             caption_text = media.caption_text
             comments = cl.media_comments(media_id, args.comment_amount)
             for comment in comments:
                 content = comment.dict()
-                comment_username = content['user']['username']
-                text = content['text']
-                if comment_username not in username_mappings:
-                    random_generated_username = generate_username(1)
-                    username_mappings[comment_username] = random_generated_username
-                    clean_text = text.replace("\\r\\n", "")
-                f.write(f"{username_mappings[comment_username][0]}: {clean_text}\n")
+                actual_username = content['user']['username']
+                text = content['text'].replace("\n", "").replace("\t", "")
+                if actual_username not in username_mappings:
+                    random_generated_username = generate_username(1)[0]
+                    username_mappings[actual_username] = (random_generated_username, user_id_counter)
+                    user_id_counter += 1
+                
+                random_username, user_uuid = username_mappings[actual_username]
+                print(f"{random_username}\t{text}\t{user_uuid}")
+                tsv_writer.writerow([random_username, text, user_uuid])
 
 def main():
     args = get_arguments()
