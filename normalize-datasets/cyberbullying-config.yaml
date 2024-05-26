@@ -6,6 +6,6 @@ datasets:
     proportion_neutral: 0
     feature_column: "cyberbullying_type"
     text_column: "tweet_text"
-    feature_presence_tags: ["religion", "age", "gender", "ethnicity"]
+    feature_presence_tags: ["religion", "age", "gender", "ethnicity", "other_cyberbullying"]
     category: 3
     label: "cyber_bullying"
