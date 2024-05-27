@@ -58,7 +58,7 @@ def find_optimal_k(df, n_components, max_k=10, step=1):
     plt.show()
 
 
-def plot_explained_variance(df, max_components=500):
+def plot_explained_variance(df, max_components):
     tfidf = TfidfVectorizer()
     csr_mat = tfidf.fit_transform(df["tokens_str"])
 
@@ -110,10 +110,11 @@ def main():
     print("-- Cyberbullying data analysis --")
     df_cyberbullying = read_dataset_with_tokens(cyberbullying_url)
 
-    # plot_explained_variance(df_cyberbullying, max_components=1000) # Run this analysis to visualize optimal number of components
+    # plot_explained_variance(df_cyberbullying, max_components=2000) # Run this analysis to visualize optimal number of components
 
-    # find_optimal_k(df_cyberbullying, n_components=1000, max_k=100, step=1) # Run this anlysis to visualize optimal k
-    pipeline(df_cyberbullying, n_components=1000, n_clusters=38)
+    # find_optimal_k(df_cyberbullying, n_components=1850, max_k=30, step=3) # Run this anlysis to visualize optimal k
+
+    pipeline(df_cyberbullying, n_components=1850, n_clusters=8)
 
 
 if __name__ == "__main__":
