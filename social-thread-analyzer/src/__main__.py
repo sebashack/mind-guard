@@ -70,8 +70,8 @@ def prepare_model(model):
 tiny_llama_fine_tuned_model = "fine_tuned_peft_model__15-05-2024__18-41-12"
 tiny_llama_url = "https://mindguard.s3.amazonaws.com/trusted/tiny-llama/002__tiny_llama_fine_tuned_peft_model_5_epochs_15-05-2024__18-41-12.tar.lz"
 
-distil_bert_fined_tuned_model = "checkpoint-8552"
-distil_bert_url = "https://mindguard.s3.amazonaws.com/trusted/distil-bert/002_fine_tuned_distil_bert_model_with_metrics_19-05-2024__20-54-52.tar.lz"
+distil_bert_fined_tuned_model = "checkpoint-8332"
+distil_bert_url = "https://mindguard.s3.amazonaws.com/trusted/distil-bert/fine_tuned_distil_bert_model__5_epochs__26-05-2024__20-46-19.tar.lz"
 
 categories = {
     "LABEL_0": "neutral",
@@ -84,7 +84,8 @@ categories = {
 def llama_summary(model_path, thread):
     base_model = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
-    seed = random.randint(0, 999999999)
+    seed = 555181259 # random.randint(0, 999999999)
+    print(f"SEED = {seed}")
     torch.cuda.manual_seed(seed)
     torch.manual_seed(seed)
 
@@ -113,7 +114,7 @@ def llama_summary(model_path, thread):
             do_sample=True,
             top_p=1.0,
             temperature=1.0,
-            min_length=None,
+            min_length=10,
             use_cache=True,
             top_k=50,
             repetition_penalty=1.0,
