@@ -1,0 +1,84 @@
+CUDA Version: 11.8
+The `load_in_4bit` and `load_in_8bit` arguments are deprecated and will be removed in the future versions. Please, pass a `BitsAndBytesConfig` object in `quantization_config` argument instead.
+--> Model TinyLlama/TinyLlama-1.1B-Chat-v1.0
+
+--> TinyLlama/TinyLlama-1.1B-Chat-v1.0 has 131.16416 Million params
+
+/home/sebastian/Documents/linea-enfasis/proyecto-integrador/mind-guard/tiny-llama/venv/lib/python3.10/site-packages/peft/utils/other.py:145: FutureWarning: prepare_model_for_int8_training is deprecated and will be removed in a future version. Use prepare_model_for_kbit_training instead.
+  warnings.warn(
+trainable params: 1,126,400 || all params: 1,101,174,784 || trainable%: 0.10229075496156657
+--> Training Set Length = 1555
+--> Validation Set Length = 84
+/home/sebastian/Documents/linea-enfasis/proyecto-integrador/mind-guard/tiny-llama/venv/lib/python3.10/site-packages/torch/cuda/memory.py:330: FutureWarning: torch.cuda.reset_max_memory_allocated now calls torch.cuda.reset_peak_memory_stats, which resets /all/ peak memory stats.
+  warnings.warn(
+Training Epoch: 0:   0%|                                                                                                                       | 0/388 [00:00<?, ?it/s]/home/sebastian/Documents/linea-enfasis/proyecto-integrador/mind-guard/tiny-llama/venv/lib/python3.10/site-packages/torch/utils/checkpoint.py:460: UserWarning: torch.utils.checkpoint: please pass in use_reentrant=True or use_reentrant=False explicitly. The default value of use_reentrant will be updated to be False in the future. To maintain current behavior, pass use_reentrant=True. It is recommended that you use use_reentrant=False. Refer to docs for more details on the differences between the two variants.
+  warnings.warn(
+/home/sebastian/Documents/linea-enfasis/proyecto-integrador/mind-guard/tiny-llama/venv/lib/python3.10/site-packages/bitsandbytes/autograd/_functions.py:316: UserWarning: MatMul8bitLt: inputs will be cast from torch.float32 to float16 during quantization
+  warnings.warn(f"MatMul8bitLt: inputs will be cast from {A.dtype} to float16 during quantization")
+Training Epoch: 0/5, step 387/388 completed (loss: 1.936375379562378): : 75078it [1:05:32, 37.95it/s] Max CUDA memory allocated was 6 GB
+Max CUDA memory reserved was 7 GB
+Peak active CUDA memory was 6 GB
+Cuda Malloc retires : 0
+CPU Total Peak Memory consumed during the train (max): 4 GB
+evaluating Epoch: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 42/42 [00:50<00:00,  1.20s/it]
+ eval_ppl=tensor(6.5896, device='cuda:0') eval_epoch_loss=tensor(1.8855, device='cuda:0')██████████████████████████████████████████████| 42/42 [00:50<00:00,  1.20s/it]
+we are about to save the PEFT modules
+PEFT modules are saved in /home/sebastian/Documents/linea-enfasis/proyecto-integrador/mind-guard/tiny-llama/fine_tuned_peft_model__15-05-2024__18-41-12 directory
+best eval loss on epoch 0 is 1.885498285293579
+Epoch 1: train_perplexity=6.7984, train_epoch_loss=1.9167, epcoh time 3932.557109246s
+Training Epoch: 0/5, step 387/388 completed (loss: 1.936375379562378): : 75078it [1:06:23, 18.85it/s]
+Training Epoch: 1:   0%|                                                                              Max CUDA memory allocated was 6 GB       | 0/388 [00:00<?, ?it/s]
+Max CUDA memory reserved was 7 GB completed (loss: 1.9147887229919434): : 75078it [1:05:32, 37.96it/s]
+Peak active CUDA memory was 6 GB
+Cuda Malloc retires : 0
+CPU Total Peak Memory consumed during the train (max): 4 GB
+evaluating Epoch: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 42/42 [00:50<00:00,  1.20s/it]
+ eval_ppl=tensor(6.4987, device='cuda:0') eval_epoch_loss=tensor(1.8716, device='cuda:0')3, 37.96it/s]
+we are about to save the PEFT modules
+PEFT modules are saved in /home/sebastian/Documents/linea-enfasis/proyecto-integrador/mind-guard/tiny-llama/fine_tuned_peft_model__15-05-2024__18-41-12 directory
+best eval loss on epoch 1 is 1.871598243713379
+Epoch 2: train_perplexity=6.4668, train_epoch_loss=1.8667, epcoh time 3932.6158313489996s
+Training Epoch: 1/5, step 387/388 completed (loss: 1.9147887229919434): : 75078it [1:06:23, 18.85it/s]                                         | 0/388 [00:00<?, ?it/s]
+Training Epoch: 2/5, step 387/388 completed (loss: 1.9012020826339722): : 75078it [1:05:32, 37.96it/s]Max CUDA memory allocated was 6 GB
+Max CUDA memory reserved was 7 GB
+Peak active CUDA memory was 6 GB
+Cuda Malloc retires : 0
+CPU Total Peak Memory consumed during the train (max): 4 GB
+evaluating Epoch: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 42/42 [00:50<00:00,  1.20s/it]
+ eval_ppl=tensor(6.4551, device='cuda:0') eval_epoch_loss=tensor(1.8649, device='cuda:0')██████████████████████████████████████████████| 42/42 [00:50<00:00,  1.20s/it]
+we are about to save the PEFT modules
+PEFT modules are saved in /home/sebastian/Documents/linea-enfasis/proyecto-integrador/mind-guard/tiny-llama/fine_tuned_peft_model__15-05-2024__18-41-12 directory
+best eval loss on epoch 2 is 1.8648635149002075
+Epoch 3: train_perplexity=6.3747, train_epoch_loss=1.8523, epcoh time 3932.6598231320004s
+Training Epoch: 2/5, step 387/388 completed (loss: 1.9012020826339722): : 75078it [1:06:23, 18.85it/s]
+Training Epoch: 3:   0%|                                                                              Max CUDA memory allocated was 6 GB       | 0/388 [00:00<?, ?it/s]
+Max CUDA memory reserved was 7 GB completed (loss: 1.892903208732605): : 75078it [1:05:32, 37.95it/s]
+Peak active CUDA memory was 6 GB
+Cuda Malloc retires : 0
+CPU Total Peak Memory consumed during the train (max): 4 GB
+evaluating Epoch: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 42/42 [00:50<00:00,  1.20s/it]
+ eval_ppl=tensor(6.4299, device='cuda:0') eval_epoch_loss=tensor(1.8610, device='cuda:0'), 37.95it/s]
+we are about to save the PEFT modules
+PEFT modules are saved in /home/sebastian/Documents/linea-enfasis/proyecto-integrador/mind-guard/tiny-llama/fine_tuned_peft_model__15-05-2024__18-41-12 directory
+best eval loss on epoch 3 is 1.8609552383422852
+Epoch 4: train_perplexity=6.3122, train_epoch_loss=1.8425, epcoh time 3933.1963800899994s
+Training Epoch: 3/5, step 387/388 completed (loss: 1.892903208732605): : 75078it [1:06:23, 18.85it/s]                                          | 0/388 [00:00<?, ?it/s]
+Training Epoch: 4/5, step 387/388 completed (loss: 1.886313557624817): : 75078it [1:05:32, 37.96it/s]Max CUDA memory allocated was 6 GB
+Max CUDA memory reserved was 7 GB
+Peak active CUDA memory was 6 GB
+Cuda Malloc retires : 0
+CPU Total Peak Memory consumed during the train (max): 4 GB
+evaluating Epoch: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 42/42 [00:50<00:00,  1.20s/it]
+ eval_ppl=tensor(6.4141, device='cuda:0') eval_epoch_loss=tensor(1.8585, device='cuda:0')██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 42/42 [00:50<00:00,  1.19s/it]
+we are about to save the PEFT modules
+PEFT modules are saved in /home/sebastian/Documents/linea-enfasis/proyecto-integrador/mind-guard/tiny-llama/fine_tuned_peft_model__15-05-2024__18-41-12 directory
+best eval loss on epoch 4 is 1.8584985733032227
+Epoch 5: train_perplexity=6.2653, train_epoch_loss=1.8350, epcoh time 3932.519522532002s
+Training Epoch: 4/5, step 387/388 completed (loss: 1.886313557624817): : 75078it [1:06:23, 18.85it/s]
+Key: avg_train_prep, Value: 6.443473815917969
+Key: avg_train_loss, Value: 1.8626422882080078
+Key: avg_eval_prep, Value: 6.477468967437744
+Key: avg_eval_loss, Value: 1.868282675743103
+Key: avg_epoch_time, Value: 3932.7097332698004
+Key: avg_checkpoint_time, Value: 0.39932866419949276
+
