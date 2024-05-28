@@ -67,11 +67,11 @@ def prepare_model(model):
     return model
 
 
-tiny_llama_fine_tuned_model = "fine_tuned_peft_model__15-05-2024__18-41-12"
+tiny_llama_fine_tunned_model = "fine_tuned_peft_model__15-05-2024__18-41-12"
 tiny_llama_url = "https://mindguard.s3.amazonaws.com/trusted/tiny-llama/002__tiny_llama_fine_tuned_peft_model_5_epochs_15-05-2024__18-41-12.tar.lz"
 
-distil_bert_fined_tuned_model = "checkpoint-8332"
-distil_bert_url = "https://mindguard.s3.amazonaws.com/trusted/distil-bert/fine_tuned_distil_bert_model__5_epochs__26-05-2024__20-46-19.tar.lz"
+distil_bert_fined_tunned_model = "distilbert-fine-tunned"
+distil_bert_url = "https://mindguard.s3.amazonaws.com/trusted/distil-bert/fine_tuned_distil_bert_model__metrics_5_epochs__28-05-2024__18-38-10.tar.lz"
 
 categories = {
     "LABEL_0": "neutral",
@@ -167,10 +167,10 @@ def main():
     models_dir = os.path.join(os.getcwd(), "_models")
     if not os.path.exists(models_dir):
         download_and_extract_tar_lz(tiny_llama_url, models_dir)
-        download_and_extract_tar_lz(distil_bert_url, models_dir)
+        download_and_extract_tar_lz(distil_bert_url, os.path.join(models_dir, distil_bert_fined_tunned_model))
 
-    ft_tiny_llama_path = os.path.join(models_dir, tiny_llama_fine_tuned_model)
-    ft_distil_bert_path = os.path.join(models_dir, distil_bert_fined_tuned_model)
+    ft_tiny_llama_path = os.path.join(models_dir, tiny_llama_fine_tunned_model)
+    ft_distil_bert_path = os.path.join(models_dir, distil_bert_fined_tunned_model)
 
     summary = llama_summary(ft_tiny_llama_path, thread)
 

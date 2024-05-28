@@ -26,9 +26,10 @@ topic_to_int = {
 }
 
 
+S3_URL = "https://mindguard.s3.amazonaws.com/refined/general-with-tokens/general-with-tokens.tsv"
+
 def main():
-    url = "https://mindguard.s3.amazonaws.com/refined/distilbert-with-tokens/distilbert-with-tokens.tsv"
-    df = read_dataset_with_tokens(url)
+    df = read_dataset_with_tokens(S3_URL)
 
     vectorizer = CountVectorizer(analyzer=lambda s: s.split(), dtype="uint8")
 
@@ -41,7 +42,7 @@ def main():
     seed = random.randint(0, 999999999)
 
     X_train, X_test, y_train, y_test = train_test_split(
-        df_countvectorizer, topic_vector, test_size=0.1, random_state=seed
+        df_countvectorizer, topic_vector, test_size=0.15, random_state=seed
     )
 
     classifier = MultinomialNB()
