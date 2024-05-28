@@ -17,8 +17,8 @@ from sklearn.metrics import classification_report
 
 
 def compute_metrics(eval_pred):
-    load_accuracy = load_metric("accuracy")
-    load_f1 = load_metric("f1", average="weighted")
+    load_accuracy = load_metric("accuracy", trust_remote_code=True)
+    load_f1 = load_metric("f1", average="weighted", trust_remote_code=True)
 
     logits, labels = eval_pred
     predictions = np.argmax(logits, axis=-1)
@@ -64,7 +64,7 @@ def main():
     seed = random.randint(0, 999999999)
     dataset_path = args.dataset
     dataset = Dataset.from_csv(dataset_path, delimiter="\t")
-    dataset = dataset.train_test_split(test_size=0.1, seed=seed)
+    dataset = dataset.train_test_split(test_size=0.15, seed=seed)
 
     tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
     data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
