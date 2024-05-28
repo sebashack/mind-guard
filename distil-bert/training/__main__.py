@@ -13,6 +13,7 @@ from transformers import (
     TrainingArguments,
     Trainer,
 )
+from sklearn.metrics import classification_report
 
 
 def compute_metrics(eval_pred):
@@ -27,7 +28,20 @@ def compute_metrics(eval_pred):
     f1 = load_f1.compute(
         predictions=predictions, references=labels, average="weighted"
     )["f1"]
-    return {"accuracy": accuracy, "f1": f1}
+
+    report = classification_report(labels, predictions, output_dict=True)
+    per_category_accuracy = {
+        f"accuracy_{category}": report[category]["precision"]
+        for category in report
+        if category not in ["accuracy", "macro avg", "weighted avg"]
+    }
+    per_category_f1 = {
+        f"f1_{category}": report[category]["f1-score"]
+        for category in report
+        if category not in ["accuracy", "macro avg", "weighted avg"]
+    }
+
+    return {"accuracy": accuracy, "f1": f1, **per_category_accuracy, **per_category_f1}
 
 
 def main():
