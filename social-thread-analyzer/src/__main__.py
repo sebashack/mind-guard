@@ -182,6 +182,7 @@ def main():
 
     models_dir = os.path.join(os.getcwd(), "_models")
     if not os.path.exists(models_dir):
+        print("Downloading fined-tunned models for distilbert and tiny-llama... next time this won't be necessary...")
         download_and_extract_tar_lz(tiny_llama_url, models_dir)
         download_and_extract_tar_lz(
             distil_bert_url, os.path.join(models_dir, distil_bert_fined_tunned_model)
