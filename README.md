@@ -248,3 +248,9 @@ To deactivate environment
 ```
 deactivate
 ```
+
+Note that our fine-tunned tiny-llama model is downloaded from:
+https://mindguard.s3.amazonaws.com/trusted/tiny-llama/002__tiny_llama_fine_tuned_peft_model_5_epochs_15-05-2024__18-41-12.tar.lz
+
+Similarly, our fine-tunned distil-bert model is downloaded from:
+https://mindguard.s3.amazonaws.com/trusted/distil-bert/fine_tuned_distil_bert_model__metrics_5_epochs__28-05-2024__18-38-10.tar.lz
