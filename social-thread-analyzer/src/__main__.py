@@ -13,6 +13,19 @@ from transformers import AutoTokenizer, pipeline
 from llama_recipes.inference.model_utils import load_model, load_peft_model
 
 
+def download_thread(url, output_dir, filename):
+    os.makedirs(output_dir, exist_ok=True)
+
+    file_path = os.path.join(output_dir, filename)
+
+    response = requests.get(url)
+
+    response.raise_for_status()
+
+    with open(file_path, "w") as file:
+        file.write(response.text)
+
+
 def download_and_extract_tar_lz(url, output_dir):
     os.makedirs(output_dir, exist_ok=True)
 
@@ -40,7 +53,7 @@ def read_thread(tsv_path):
     thread = ""
     posts = []
     for index, row in df.iterrows():
-        username = row["username"]
+        username = row["user"]
         post = row["post"].replace("\n", " ")
 
         thread += f"{username}: {post}\n"
@@ -84,7 +97,7 @@ categories = {
 def llama_summary(model_path, thread):
     base_model = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
-    seed = 555181259 # random.randint(0, 999999999)
+    seed = 555181259  # random.randint(0, 999999999)
     print(f"SEED = {seed}")
     torch.cuda.manual_seed(seed)
     torch.manual_seed(seed)
@@ -148,8 +161,8 @@ def distil_bert_post_classification(model_path, posts):
 def main():
     parser = argparse.ArgumentParser(description="Analyze social media post")
     parser.add_argument(
-        "-t",
-        "--thread",
+        "-u",
+        "--url",
         required=True,
         type=str,
         help="Path to file with dialog to summarize",
@@ -162,12 +175,17 @@ def main():
 
     args = parser.parse_args()
 
-    thread, posts = read_thread(args.thread)
+    output_dir = os.path.join(os.getcwd(), "_tmp")
+    download_thread(args.url, output_dir, "thread.tsv")
+
+    thread, posts = read_thread(os.path.join(output_dir, "thread.tsv"))
 
     models_dir = os.path.join(os.getcwd(), "_models")
     if not os.path.exists(models_dir):
         download_and_extract_tar_lz(tiny_llama_url, models_dir)
-        download_and_extract_tar_lz(distil_bert_url, os.path.join(models_dir, distil_bert_fined_tunned_model))
+        download_and_extract_tar_lz(
+            distil_bert_url, os.path.join(models_dir, distil_bert_fined_tunned_model)
+        )
 
     ft_tiny_llama_path = os.path.join(models_dir, tiny_llama_fine_tunned_model)
     ft_distil_bert_path = os.path.join(models_dir, distil_bert_fined_tunned_model)
