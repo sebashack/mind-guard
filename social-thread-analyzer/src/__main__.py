@@ -13,40 +13,6 @@ from transformers import AutoTokenizer, pipeline
 from llama_recipes.inference.model_utils import load_model, load_peft_model
 
 
-def download_thread(url, output_dir, filename):
-    os.makedirs(output_dir, exist_ok=True)
-
-    file_path = os.path.join(output_dir, filename)
-
-    response = requests.get(url)
-
-    response.raise_for_status()
-
-    with open(file_path, "w") as file:
-        file.write(response.text)
-
-
-def download_and_extract_tar_lz(url, output_dir):
-    os.makedirs(output_dir, exist_ok=True)
-
-    tar_lz_path = os.path.join(output_dir, "artifact.tar.lz")
-
-    response = requests.get(url, stream=True)
-    response.raise_for_status()
-
-    with open(tar_lz_path, "wb") as f:
-        for chunk in response.iter_content(chunk_size=8192):
-            f.write(chunk)
-
-    subprocess.run(["lzip", "-d", tar_lz_path], check=True)
-
-    tar_path = tar_lz_path[:-3]
-
-    subprocess.run(["tar", "-xf", tar_path, "-C", output_dir], check=True)
-
-    os.remove(tar_path)
-
-
 def read_thread(tsv_path):
     df = pd.read_csv(tsv_path, sep="\t")
 
@@ -80,11 +46,8 @@ def prepare_model(model):
     return model
 
 
-tiny_llama_fine_tunned_model = "fine_tuned_peft_model__15-05-2024__18-41-12"
-tiny_llama_url = "https://mindguard.s3.amazonaws.com/trusted/tiny-llama/002__tiny_llama_fine_tuned_peft_model_5_epochs_15-05-2024__18-41-12.tar.lz"
-
-distil_bert_fined_tunned_model = "distilbert-fine-tunned"
-distil_bert_url = "https://mindguard.s3.amazonaws.com/trusted/distil-bert/fine_tuned_distil_bert_model__metrics_5_epochs__28-05-2024__18-38-10.tar.lz"
+tiny_llama_fine_tunned_model = "tiny-llama"
+distil_bert_fined_tunned_model = "distilbert"
 
 categories = {
     "LABEL_0": "neutral",
@@ -162,11 +125,11 @@ def distil_bert_post_classification(model_path, posts):
 def main():
     parser = argparse.ArgumentParser(description="Analyze social media post")
     parser.add_argument(
-        "-u",
-        "--url",
+        "-t",
+        "--thread",
         required=True,
         type=str,
-        help="Path to file with dialog to summarize",
+        help="Path to social thread",
     )
 
     if torch.cuda.is_available():
@@ -176,18 +139,9 @@ def main():
 
     args = parser.parse_args()
 
-    output_dir = os.path.join(os.getcwd(), "_tmp")
-    download_thread(args.url, output_dir, "thread.tsv")
-
-    thread, posts = read_thread(os.path.join(output_dir, "thread.tsv"))
+    thread, posts = read_thread(args.thread)
 
     models_dir = os.path.join(os.getcwd(), "_models")
-    if not os.path.exists(models_dir):
-        print("Downloading fined-tunned models for distilbert and tiny-llama... next time this won't be necessary...")
-        download_and_extract_tar_lz(tiny_llama_url, models_dir)
-        download_and_extract_tar_lz(
-            distil_bert_url, os.path.join(models_dir, distil_bert_fined_tunned_model)
-        )
 
     ft_tiny_llama_path = os.path.join(models_dir, tiny_llama_fine_tunned_model)
     ft_distil_bert_path = os.path.join(models_dir, distil_bert_fined_tunned_model)

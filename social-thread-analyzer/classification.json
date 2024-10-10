@@ -1,0 +1,21 @@
+{
+    "summary": "Danny12 is unhappy with his life. Mark92 thinks he's going to kill himself for some reason.",
+    "summary_classification": {
+        "category": "neutral",
+        "score": 0.6359059810638428
+    },
+    "post_classification": {
+        "0": {
+            "category": "depression_and_anxiety",
+            "score": 0.9692243933677673
+        },
+        "1": {
+            "category": "neutral",
+            "score": 0.9813373684883118
+        },
+        "2": {
+            "category": "neutral",
+            "score": 0.9674742221832275
+        }
+    }
+}
