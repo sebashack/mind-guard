@@ -60,7 +60,7 @@ categories = {
 def llama_summary(model_path, thread):
     base_model = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
-    #seed = 555181258  # random.randint(0, 999999999)
+    # seed = 555181258  # random.randint(0, 999999999)
     seed = 123098  # random.randint(0, 999999999)
     print(f"SEED = {seed}")
     torch.cuda.manual_seed(seed)
